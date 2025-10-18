@@ -35,7 +35,7 @@ export const App = () => {
   };
 
   const handlOptionCheng = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrOption(+event.target.value);
+    setCurrOption(Number(event.target.value));
     setErrorOption(false);
   };
 
@@ -47,22 +47,14 @@ export const App = () => {
     setErrorOption(false);
   };
 
-  const newTodoId = () => {
-    let maxId: number = 0;
-
-    todos.forEach(todo => {
-      if (todo.id > maxId) {
-        maxId = todo.id;
-      }
-    });
-
-    return maxId + 1;
-  };
+  const newTodoId = () => Math.max(0, ...todos.map(todo => todo.id)) + 1;
 
   const newTodo = (): TodoUser => {
-    const selectUser: User = usersFromServer.find(
-      user => user.id === currOption,
-    ) as User;
+    const selectUser = usersFromServer.find(user => user.id === currOption);
+
+    if (!selectUser) {
+      throw new Error('User not found');
+    }
 
     return {
       id: newTodoId(),
@@ -119,11 +111,11 @@ export const App = () => {
             value={currOption}
             onChange={handlOptionCheng}
           >
-            <option value="0" disabled>
+            <option value={0} disabled>
               Choose a user
             </option>
             {usersFromServer.map(user => (
-              <option value={String(user.id)} key={user.id}>
+              <option value={user.id} key={user.id}>
                 {user.name}
               </option>
             ))}
