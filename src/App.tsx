@@ -11,11 +11,11 @@ import { TodoUser } from './types/typeTodoWithUser';
 function renderTodos(todos: Todo[], users: User[]): TodoUser[] {
   return todos
     .map(todo => {
-      const user = users.find(u => u.id === todo.userId);
+      const currUser = users.find(user => user.id === todo.userId);
 
-      return user ? { ...todo, user } : null;
+      return currUser ? { ...todo, user: currUser } : null;
     })
-    .filter(todo => todo !== null);
+    .filter((t): t is TodoUser => t !== null);
 }
 
 export const App = () => {
@@ -29,13 +29,13 @@ export const App = () => {
   const [currOption, setCurrOption] = useState(0);
   const [errorOption, setErrorOption] = useState(false);
 
-  const handlTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrTitle(e.target.value);
+  const handlTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrTitle(event.target.value);
     setErrorTitle(false);
   };
 
-  const handlOptionCheng = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrOption(+e.target.value);
+  const handlOptionCheng = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrOption(+event.target.value);
     setErrorOption(false);
   };
 
@@ -61,7 +61,7 @@ export const App = () => {
 
   const newTodo = (): TodoUser => {
     const selectUser: User = usersFromServer.find(
-      u => u.id === currOption,
+      user => user.id === currOption,
     ) as User;
 
     return {
@@ -79,8 +79,8 @@ export const App = () => {
     setTodos(currTodos => [...currTodos, creatTodo]);
   };
 
-  const handlFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handlFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     setErrorTitle(!currTitle);
     setErrorOption(!currOption);
@@ -122,9 +122,9 @@ export const App = () => {
             <option value="0" disabled>
               Choose a user
             </option>
-            {usersFromServer.map(u => (
-              <option value={String(u.id)} key={u.id}>
-                {u.name}
+            {usersFromServer.map(user => (
+              <option value={String(user.id)} key={user.id}>
+                {user.name}
               </option>
             ))}
           </select>
